@@ -1,0 +1,10 @@
+node_modules/
+.idea/*
+*.log
+migration/
+dist/
+build/
+coverage/*
+.env
+src/routes.ts
+src/swagger.json
