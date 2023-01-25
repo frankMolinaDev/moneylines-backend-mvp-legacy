@@ -15,6 +15,9 @@ export default class NFL {
         console.log(' === fetching start')
         await page.waitForNetworkIdle();
 
+        await page.select('div.odds-tools-sub-nav__primary-filters-container > div > div:nth-child(2)> select', 'total');
+        await sleep(3000)
+
         const matchDataXpath = `//div[contains(@class, "best-odds__game-info")]//parent::td//parent::tr`;
         const matchElements = await page.$x(matchDataXpath)
 
@@ -37,18 +40,38 @@ export default class NFL {
             const awayTeam = await matchElement.evaluate((el: HTMLElement) => el.children[0].children[0].children[0].children[1].children[0].children[1].children[0].textContent?.trim());
             console.log(homeTeam, ' ', awayTeam)
 
-            const homeOpenPoint = await matchElement.evaluate((el: HTMLElement) => el.children[1].children[0].children[0].children[0].textContent?.trim());
-            const awayOpenPoint = await matchElement.evaluate((el: HTMLElement) => el.children[1].children[0].children[1].children[0].textContent?.trim());
-            console.log(homeOpenPoint, ' ', awayOpenPoint);
+            const homeOpenPoint = await matchElement.evaluate((el: HTMLElement) => {
+                return el.children[1].children[0].children[0].children[0] ? el.children[1].children[0].children[0].children[0].textContent?.trim(): '';
+            });
+            const awayOpenPoint = await matchElement.evaluate((el: HTMLElement) => {
+                return el.children[1].children[0].children[1] ? el.children[1].children[0].children[1].children[0].textContent?.trim(): '';
+            });
+            console.log('openpoint = ', homeOpenPoint, ' ', awayOpenPoint)
 
-            const homeBestOddsPoint = await matchElement.evaluate((el: HTMLElement) => el.children[2].children[0].children[0].children[0].children[0].textContent?.trim());
-            const awayBestOddsPoint = await matchElement.evaluate((el: HTMLElement) => el.children[2].children[0].children[1].children[0].children[0].textContent?.trim());
-            console.log(homeBestOddsPoint, ' ', awayBestOddsPoint)
+            const homeBestOddsPoint = await matchElement.evaluate((el: HTMLElement) => {
+                const str = el.children[2].children[0].children[0].children[0].children[0].textContent?.trim();
+                if (str === 'N/A') {
+                    return ''
+                } else {
+                    return str;
+                }
+            });
+            const awayBestOddsPoint = await matchElement.evaluate((el: HTMLElement) => {
+                const str = el.children[2].children[0].children[1].children[0].children[0].textContent?.trim();
+                if (str === 'N/A') {
+                    return '';
+                } else {
+                    return str
+                }
+            });
+            console.log('betodd = ', homeBestOddsPoint, ' ', awayBestOddsPoint)
 
             const homePointsbetPoint = await matchElement.evaluate((el: HTMLElement) => {
                 const fStr = el.children[3].children[0].children[0].children[0].children[0].textContent?.trim();
                 if (fStr && fStr !== 'N/A') {
                     return fStr
+                } else if (fStr === 'N/A') {
+                    return '';
                 } else {
                     return el.children[3].children[0].children[0].children[0].children[1].textContent?.trim();
                 }
@@ -58,7 +81,9 @@ export default class NFL {
                 const fStr = el.children[3].children[0].children[1].children[0].children[0].textContent?.trim();
                 if (fStr && fStr !== 'N/A') {
                     return fStr
-                } else {
+                } else if (fStr === 'N/A') {
+                    return '';
+                }else {
                     return el.children[3].children[0].children[1].children[0].children[1].textContent?.trim()
                 }
             });
@@ -66,85 +91,155 @@ export default class NFL {
 
             const homeBetMGMPoint = await matchElement.evaluate((el: HTMLElement) => {
                 const fStr = el.children[4].children[0].children[0].children[0].children[0].textContent?.trim();
-                const sStr = el.children[4].children[0].children[0].children[0].children[1].textContent?.trim()
-                return fStr ? fStr : sStr
+                if (fStr && fStr !== 'N/A') {
+                    return fStr
+                } else if (fStr === 'N/A') {
+                    return '';
+                }else {
+                    return el.children[4].children[0].children[0].children[0].children[1].textContent?.trim();
+                }
             });
             const awayBetMGMPoint = await matchElement.evaluate((el: HTMLElement) => {
-                const fStr = el.children[4].children[0].children[1].children[0].children[0].textContent?.trim();
-                const sStr = el.children[4].children[0].children[1].children[0].children[1].textContent?.trim()
-                return fStr ? fStr : sStr
+                const fStr = el.children[4].children[0].children[1].children[0].children[0].textContent?.trim();                
+                if (fStr && fStr !== 'N/A') {
+                    return fStr
+                } else if (fStr === 'N/A') {
+                    return '';
+                }else {
+                    return el.children[4].children[0].children[1].children[0].children[1].textContent?.trim()
+                }
             });
             console.log(homeBetMGMPoint, ' ', awayBetMGMPoint)
 
             const homeCaesarPoint = await matchElement.evaluate((el: HTMLElement) => {
                 const fStr = el.children[5].children[0].children[0].children[0].children[0].textContent?.trim();
-                const sStr = el.children[5].children[0].children[0].children[0].children[1].textContent?.trim()
-                return fStr ? fStr : sStr
+                if (fStr && fStr !== 'N/A') {
+                    return fStr
+                } else if (fStr === 'N/A') {
+                    return '';
+                }else {
+                    return el.children[5].children[0].children[0].children[0].children[1].textContent?.trim()
+                }
             });
             const awayCaesarPoint = await matchElement.evaluate((el: HTMLElement) => {
                 const fStr = el.children[5].children[0].children[1].children[0].children[0].textContent?.trim();
-                const sStr = el.children[5].children[0].children[1].children[0].children[1].textContent?.trim()
-                return fStr ? fStr : sStr
+                if (fStr && fStr !== 'N/A') {
+                    return fStr
+                } else if (fStr === 'N/A') {
+                    return '';
+                }else {
+                    return el.children[5].children[0].children[1].children[0].children[1].textContent?.trim()
+                }
             });
             console.log(homeCaesarPoint, ' ', awayCaesarPoint)
 
             const homeFanduelPoint = await matchElement.evaluate((el: HTMLElement) => {
                 const fStr = el.children[6].children[0].children[0].children[0].children[0].textContent?.trim();
-                const sStr = el.children[6].children[0].children[0].children[0].children[1].textContent?.trim()
-                return fStr ? fStr : sStr
+                if (fStr && fStr !== 'N/A') {
+                    return fStr
+                } else if (fStr === 'N/A') {
+                    return '';
+                }else {
+                    return el.children[6].children[0].children[0].children[0].children[1].textContent?.trim()
+                }
             });
             const awayFanduelPoint = await matchElement.evaluate((el: HTMLElement) => {
                 const fStr = el.children[6].children[0].children[1].children[0].children[0].textContent?.trim();
-                const sStr = el.children[6].children[0].children[1].children[0].children[1].textContent?.trim()
-                return fStr ? fStr : sStr
+                if (fStr && fStr !== 'N/A') {
+                    return fStr
+                } else if (fStr === 'N/A') {
+                    return '';
+                }else {
+                    return el.children[6].children[0].children[1].children[0].children[1].textContent?.trim()
+                }
             });
             console.log(homeFanduelPoint, ' ', awayFanduelPoint)
 
             const homeDraftKingsPoint = await matchElement.evaluate((el: HTMLElement) => {
                 const fStr = el.children[7].children[0].children[0].children[0].children[0].textContent?.trim();
-                const sStr = el.children[7].children[0].children[0].children[0].children[1].textContent?.trim()
-                return fStr ? fStr : sStr
+                if (fStr && fStr !== 'N/A') {
+                    return fStr
+                } else if (fStr === 'N/A') {
+                    return '';
+                }else {
+                    return el.children[7].children[0].children[0].children[0].children[1].textContent?.trim()
+                }
             });
             const awayDraftKingsPoint = await matchElement.evaluate((el: HTMLElement) => {
                 const fStr = el.children[7].children[0].children[1].children[0].children[0].textContent?.trim();
-                const sStr = el.children[7].children[0].children[1].children[0].children[1].textContent?.trim()
-                return fStr ? fStr : sStr
+                if (fStr && fStr !== 'N/A') {
+                    return fStr
+                } else if (fStr === 'N/A') {
+                    return '';
+                }else {
+                    return el.children[7].children[0].children[1].children[0].children[1].textContent?.trim()
+                }
             });
             console.log(homeDraftKingsPoint, ' ', awayDraftKingsPoint)
 
             const homeBetRiversPoint = await matchElement.evaluate((el: HTMLElement) => {
                 const fStr = el.children[8].children[0].children[0].children[0].children[0].textContent?.trim();
-                const sStr = el.children[8].children[0].children[0].children[0].children[1].textContent?.trim()
-                return fStr ? fStr : sStr
+                if (fStr && fStr !== 'N/A') {
+                    return fStr
+                } else if (fStr === 'N/A') {
+                    return '';
+                }else {
+                    return el.children[8].children[0].children[0].children[0].children[1].textContent?.trim()
+                }
             });
             const awayBetRiversPoint = await matchElement.evaluate((el: HTMLElement) => {
                 const fStr = el.children[8].children[0].children[1].children[0].children[0].textContent?.trim();
-                const sStr = el.children[8].children[0].children[1].children[0].children[1].textContent?.trim()
-                return fStr ? fStr : sStr
+                if (fStr && fStr !== 'N/A') {
+                    return fStr
+                } else if (fStr === 'N/A') {
+                    return '';
+                }else {
+                    return el.children[8].children[0].children[1].children[0].children[1].textContent?.trim()
+                }
             });
             console.log(homeBetRiversPoint, ' ', awayBetRiversPoint)
 
             const homeUnibetPoint = await matchElement.evaluate((el: HTMLElement) => {
                 const fStr = el.children[10].children[0].children[0].children[0].children[0].textContent?.trim();
-                const sStr = el.children[10].children[0].children[0].children[0].children[1].textContent?.trim()
-                return fStr ? fStr : sStr
+                if (fStr && fStr !== 'N/A') {
+                    return fStr
+                } else if (fStr === 'N/A') {
+                    return '';
+                }else {
+                    return el.children[10].children[0].children[0].children[0].children[1].textContent?.trim()
+                }
             });
             const awayUnibetPoint = await matchElement.evaluate((el: HTMLElement) => {
                 const fStr = el.children[10].children[0].children[1].children[0].children[0].textContent?.trim();
-                const sStr = el.children[10].children[0].children[1].children[0].children[1].textContent?.trim()
-                return fStr ? fStr : sStr
+                if (fStr && fStr !== 'N/A') {
+                    return fStr
+                } else if (fStr === 'N/A') {
+                    return '';
+                }else {
+                    return el.children[10].children[0].children[1].children[0].children[1].textContent?.trim()
+                }
             });
             console.log(homeUnibetPoint, ' ', awayUnibetPoint)
 
             const homeBet365Point = await matchElement.evaluate((el: HTMLElement) => {
                 const fStr = el.children[11].children[0].children[0].children[0].children[0].textContent?.trim();
-                const sStr = el.children[11].children[0].children[0].children[0].children[1].textContent?.trim()
-                return fStr ? fStr : sStr
+                if (fStr && fStr !== 'N/A') {
+                    return fStr
+                } else if (fStr === 'N/A') {
+                    return '';
+                }else {
+                    return el.children[11].children[0].children[0].children[0].children[1].textContent?.trim()
+                }
             });
             const awayBet365Point = await matchElement.evaluate((el: HTMLElement) => {
                 const fStr = el.children[11].children[0].children[1].children[0].children[0].textContent?.trim();
-                const sStr = el.children[11].children[0].children[1].children[0].children[1].textContent?.trim()
-                return fStr ? fStr : sStr
+                if (fStr && fStr !== 'N/A') {
+                    return fStr
+                } else if (fStr === 'N/A') {
+                    return '';
+                }else {
+                    return el.children[11].children[0].children[1].children[0].children[1].textContent?.trim()
+                }
             });
             console.log(homeBet365Point, ' ', awayBet365Point)
 
@@ -190,5 +285,7 @@ export default class NFL {
 
         console.log(' === fetching end')
         console.log('--- NFL END ---')
+        
+        await browser.close();
     }
 }
