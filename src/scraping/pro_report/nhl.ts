@@ -7,7 +7,7 @@ export default class NHL {
     
     public start = async () => {
         console.log('--- NHL START ---')
-        const browser = await puppeteer.launch({headless: false});
+        const browser = await puppeteer.launch({headless: true})
         const page = await browser.newPage();
         let i = 0;
         while(i < 5) {

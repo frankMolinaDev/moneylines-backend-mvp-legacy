@@ -7,7 +7,7 @@ export default class NCAAB {
     
     public start = async () => {
         console.log('--- NCAAB START ---')
-        const browser = await puppeteer.launch({headless: false});
+        const browser = await puppeteer.launch({headless: true})
         const page = await browser.newPage();
         let i = 0;
         while(i < 5) {
