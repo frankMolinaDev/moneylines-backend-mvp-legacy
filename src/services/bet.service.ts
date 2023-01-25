@@ -13,6 +13,7 @@ const getBets = async (filter: any) => {
 };
 
 const updateBet = async (data: any) => {
+  console.log(data)
   const value = await repository.findOneBy({matchId: data.matchId})
   if (value && value.betData !== data.betData) {
     value.betData = data.betData;

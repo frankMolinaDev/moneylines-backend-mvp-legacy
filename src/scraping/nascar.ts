@@ -2,11 +2,11 @@ import puppeteer from "puppeteer";
 import { sleep } from "../utils/timeout";
 import betService from '../services/bet.service'
 
-export default class NFL {
-    public url = 'https://www.actionnetwork.com/nfl/odds';
+export default class NASCAR {
+    public url = 'https://www.actionnetwork.com/nascar/odds';
     
     public start = async () => {
-        console.log('--- NFL START ---')
+        console.log('--- NASCAR START ---')
         const browser = await puppeteer.launch({headless: false});
         const page = await browser.newPage();
         await page.setDefaultNavigationTimeout(60000);
@@ -260,7 +260,7 @@ export default class NFL {
             await sleep(3000);
 
             await betService.updateBet({
-                sportName: 'NFL',
+                sportName: 'NASCAR',
                 matchId,
                 matchDate,
                 betDate: '',
@@ -268,7 +268,7 @@ export default class NFL {
             })
         }
 
-        console.log('--- NFL END ---')
+        console.log('--- NASCAR END ---')
         
         await browser.close();
     }

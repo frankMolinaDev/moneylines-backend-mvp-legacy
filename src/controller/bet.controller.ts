@@ -8,9 +8,4 @@ export class BetController extends Controller {
     const requests = await betService.getBets(null);
     return requests;
   }
-  // @Get('{id}')
-  // public async getRequest(@Path() id: number) {
-  //   const request = await betService.getRequestById(id);
-  //   return request;
-  // }
 }
