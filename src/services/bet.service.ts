@@ -12,4 +12,14 @@ const getBets = async (filter: any) => {
   }
 };
 
-export default { getBets };
+const updateBet = async (data: any) => {
+  const value = await repository.findOneBy({matchId: data.matchId})
+  if (value && value.betData !== data.betData) {
+    value.betData = data.betData;
+    await repository.save(value);
+  } else if (!value) {
+    await repository.save(data)
+  }
+}
+
+export default { getBets, updateBet };

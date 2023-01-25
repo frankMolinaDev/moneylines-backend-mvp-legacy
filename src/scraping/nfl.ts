@@ -1,10 +1,12 @@
 import puppeteer from "puppeteer";
 import { sleep } from "../utils/timeout";
+import betService from '../services/bet.service'
 
 export default class NFL {
     public url = 'https://www.actionnetwork.com/nfl/odds';
     
     public start = async () => {
+        console.log('--- NFL START ---')
         const browser = await puppeteer.launch({headless: false});
         const page = await browser.newPage();
         await page.setDefaultNavigationTimeout(60000);
@@ -12,27 +14,22 @@ export default class NFL {
 
         console.log(' === fetching start')
         await page.waitForNetworkIdle();
-        console.log(' === fetching end')
-
-        const matches: any[] = [];
-        const dates: string[] = [];
-
-        // const matchDateXpath = `//div[contains(@class, "best-odds__game-status")]/div`
-        // const matchDateElements = await page.$x(matchDateXpath)
-
-        // for await (const matchDateElement of matchDateElements) {
-        //     const matchDate = await matchDateElement.evaluate((el: HTMLElement) => {
-        //         return el.textContent?.trim()
-        //     })
-        //     dates.push(matchDate)
-        // }
 
         const matchDataXpath = `//div[contains(@class, "best-odds__game-info")]//parent::td//parent::tr`;
         const matchElements = await page.$x(matchDataXpath)
 
         for await (const matchElement of matchElements) {
             const matchURL = await matchElement.evaluate((el: HTMLElement) => el.children[0].children[0].children[0].getAttribute('href') )
-            console.log(matchURL)
+            const matchDetailURL = 'https://www.actionnetwork.com' + matchURL;
+            const detailPage = await browser.newPage();
+            await detailPage.setDefaultNavigationTimeout(60000);
+            await detailPage.goto(matchDetailURL, {waitUntil: 'networkidle2'});
+            const matchDateXpath = '//div[contains(@class, "game-odds__date-container")]/span';
+            const [matchDateElement] = await detailPage.$x(matchDateXpath);
+            const matchDate = matchDateElement ? await matchDateElement.evaluate((el: HTMLElement) => el.textContent?.trim()) : '';
+            console.log(matchDate)
+            await detailPage.close();
+            
             const matchId = matchURL.match(/[a-zA-Z0-9]*$/)[0]
             console.log(matchId)
 
@@ -150,6 +147,48 @@ export default class NFL {
                 return fStr ? fStr : sStr
             });
             console.log(homeBet365Point, ' ', awayBet365Point)
+
+            const betData = [
+                {
+                    team: homeTeam,
+                    open: homeOpenPoint,
+                    best_odd: homeBestOddsPoint,
+                    points_bet: homePointsbetPoint,
+                    bet_mgm: homeBetMGMPoint,
+                    caesar: homeCaesarPoint,
+                    fanduel: homeFanduelPoint,
+                    draft_kings: homeDraftKingsPoint,
+                    bet_rivers: homeBetRiversPoint,
+                    unibet: homeUnibetPoint,
+                    bet365: homeBet365Point,
+                },
+                {
+                    team: awayTeam,
+                    open: awayOpenPoint,
+                    best_odd: awayBestOddsPoint,
+                    points_bet: awayPointsbetPoint,
+                    bet_mgm: awayBetMGMPoint,
+                    caesar: awayCaesarPoint,
+                    fanduel: awayFanduelPoint,
+                    draft_kings: awayDraftKingsPoint,
+                    bet_rivers: awayBetRiversPoint,
+                    unibet: awayUnibetPoint,
+                    bet365: awayBet365Point,
+                },
+            ]
+
+            await sleep(3000);
+
+            await betService.updateBet({
+                sportName: 'NFL',
+                matchId,
+                matchDate,
+                betDate: '',
+                betData: JSON.stringify(betData)
+            })
         }
+
+        console.log(' === fetching end')
+        console.log('--- NFL END ---')
     }
 }

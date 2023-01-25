@@ -7,17 +7,17 @@ export class Bet extends DateTimeEntity {
   id: number;
 
   @Column({nullable: true})
-  matchId: string;
-
-  @Column({nullable: true})
   sportName: string;
 
   @Column({nullable: true})
-  betDate: string;
+  matchId: string;
   
   @Column({nullable: true})
   matchDate: string;
 
   @Column({nullable: true})
+  betDate: string;
+
+  @Column({nullable: true, length: 1024})
   betData: string;
 }
