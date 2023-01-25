@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { Bet } from './entities/bet.entity';
+import { ProReport } from './entities/pro_report.entity';
 
 export const AppDataSource = new DataSource({
   type: 'mysql',
@@ -11,7 +12,7 @@ export const AppDataSource = new DataSource({
   database: 'sports',
   synchronize: true,
   logging: false,
-  entities: [Bet],
+  entities: [Bet, ProReport],
   migrations: [],
   subscribers: [],
 });

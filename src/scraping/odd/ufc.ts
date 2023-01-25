@@ -1,12 +1,12 @@
 import puppeteer from "puppeteer";
-import { sleep } from "../utils/timeout";
-import betService from '../services/bet.service'
+import { sleep } from "../../utils/timeout";
+import betService from '../../services/bet.service'
 
-export default class NBA {
-    public url = 'https://www.actionnetwork.com/nba/odds';
+export default class UFC {
+    public url = 'https://www.actionnetwork.com/ufc/odds';
     
     public start = async () => {
-        console.log('--- NBA START ---')
+        console.log('--- UFC START ---')
         const browser = await puppeteer.launch({headless: true});
         const page = await browser.newPage();
         let i = 0;
@@ -19,7 +19,7 @@ export default class NBA {
             } catch (error) {
                 i++;
             }
-        }        
+        }   
 
         for await (const i of [1, 2, 3, 4, 5, 6, 7]) {
             console.log(' ==== ', i)
@@ -273,7 +273,7 @@ export default class NBA {
                 await sleep(3000);
 
                 await betService.updateBet({
-                    sportName: 'NBA',
+                    sportName: 'UFC',
                     matchId,
                     matchDate,
                     betDate,
@@ -290,7 +290,7 @@ export default class NBA {
             await sleep(3000);
         }
 
-        console.log('--- NBA END ---')
+        console.log('--- UFC END ---')
 
         await browser.close();
     }

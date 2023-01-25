@@ -1,12 +1,12 @@
 import puppeteer from "puppeteer";
-import { sleep } from "../utils/timeout";
-import betService from '../services/bet.service'
+import { sleep } from "../../utils/timeout";
+import betService from '../../services/bet.service'
 
-export default class NCAAF {
-    public url = 'https://www.actionnetwork.com/ncaaf/odds';
-
+export default class WTA {
+    public url = 'https://www.actionnetwork.com/wta/odds';
+    
     public start = async () => {
-        console.log('--- NCAAF START ---')
+        console.log('--- WTA START ---')
         const browser = await puppeteer.launch({headless: true});
         const page = await browser.newPage();
         let i = 0;
@@ -21,26 +21,28 @@ export default class NCAAF {
             }
         }   
 
-        await page.select('div.odds-tools-sub-nav__primary-filters-container > div > div:nth-child(2)> select', 'total');
-        await sleep(3000)
+        for await (const i of [1, 2, 3, 4, 5, 6, 7]) {
+            console.log(' ==== ', i)
+            await page.select('div.odds-tools-sub-nav__primary-filters-container > div > div:nth-child(2)> select', 'total');
+            await sleep(3000)
 
-        const matchDataXpath = `//div[contains(@class, "best-odds__game-info")]//parent::td//parent::tr`;
-        const matchElements = await page.$x(matchDataXpath)
+            let betDateXpath = '//span[@class="day-nav__display"]'
+            const [betDateElement] = await page.$x(betDateXpath)
+            const betDate = await betDateElement.evaluate((el: HTMLElement) => el.textContent?.trim());
+            const matchDataXpath = `//div[contains(@class, "best-odds__game-info")]//parent::td//parent::tr`;
+            const matchElements = await page.$x(matchDataXpath)
+            for await (const matchElement of matchElements) {
+                const matchURL = await matchElement.evaluate((el: HTMLElement) => el.children[0].children[0].children[0].getAttribute('href') )
+                const matchDetailURL = 'https://www.actionnetwork.com' + matchURL;
+                const detailPage = await browser.newPage();
+                await detailPage.setDefaultNavigationTimeout(60000);
+                await detailPage.goto(matchDetailURL, {waitUntil: 'networkidle2'});
+                const matchDateXpath = '//div[contains(@class, "game-odds__date-container")]/span';
+                const [matchDateElement] = await detailPage.$x(matchDateXpath);
+                const matchDate = matchDateElement ? await matchDateElement.evaluate((el: HTMLElement) => el.textContent?.trim()) : '';
 
-        for await (const matchElement of matchElements) {
-            const matchURL = await matchElement.evaluate((el: HTMLElement) => el.children[0].children[0].children[0].getAttribute('href') )
-            const matchDetailURL = 'https://www.actionnetwork.com' + matchURL;
-            const detailPage = await browser.newPage();
-            await detailPage.setDefaultNavigationTimeout(60000);
-            await detailPage.goto(matchDetailURL, {waitUntil: 'networkidle2'});
-            const matchDateXpath = '//div[contains(@class, "game-odds__date-container")]/span';
-            const [matchDateElement] = await detailPage.$x(matchDateXpath);
-            const matchDate = matchDateElement ? await matchDateElement.evaluate((el: HTMLElement) => el.textContent?.trim()) : '';
-            const matchDateTime = (new Date(matchDate)).getTime();
-            const todayTime = (new Date()).getTime();
-            await detailPage.close();
-
-            if (matchDateTime > todayTime) {
+                await detailPage.close();
+    
                 const matchId = matchURL.match(/[a-zA-Z0-9]*$/)[0]
 
                 const homeTeam = await matchElement.evaluate((el: HTMLElement) => el.children[0].children[0].children[0].children[0].children[0].children[1].children[0].textContent?.trim());
@@ -271,17 +273,25 @@ export default class NCAAF {
                 await sleep(3000);
 
                 await betService.updateBet({
-                    sportName: 'NCAAF',
+                    sportName: 'WTA',
                     matchId,
                     matchDate,
-                    betDate: '',
+                    betDate,
                     betData: JSON.stringify(betData)
                 })
             }
+            const nextElement = await page.$('button[aria-label="Next Date"]');
+            if (nextElement) {
+                await page.click('button[aria-label="Next Date"]');
+                await page.waitForNetworkIdle();
+            } else {
+                break;
+            }
+            await sleep(3000);
         }
-
-        console.log('--- NCAAF END ---')
         
+        console.log('--- WTA END ---')
+
         await browser.close();
     }
 }

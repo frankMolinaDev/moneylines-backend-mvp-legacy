@@ -1,12 +1,12 @@
 import puppeteer from "puppeteer";
-import { sleep } from "../utils/timeout";
-import betService from '../services/bet.service'
+import { sleep } from "../../utils/timeout";
+import betService from '../../services/bet.service'
 
-export default class ATP {
-    public url = 'https://www.actionnetwork.com/atp/odds';
+export default class NCAAB {
+    public url = 'https://www.actionnetwork.com/ncaab/odds';
     
     public start = async () => {
-        console.log('--- ATP START ---')
+        console.log('--- NCAAB START ---')
         const browser = await puppeteer.launch({headless: true});
         const page = await browser.newPage();
         let i = 0;
@@ -270,11 +270,10 @@ export default class ATP {
                     },
                 ]
 
-
                 await sleep(3000);
 
                 await betService.updateBet({
-                    sportName: 'ATP',
+                    sportName: 'NCAAB',
                     matchId,
                     matchDate,
                     betDate,
@@ -291,7 +290,7 @@ export default class ATP {
             await sleep(3000);
         }
 
-        console.log('--- ATP END ---')
+        console.log('--- NCAAB END ---')
 
         await browser.close();
     }

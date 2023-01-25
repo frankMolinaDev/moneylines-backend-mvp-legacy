@@ -1,31 +1,20 @@
 import puppeteer from "puppeteer";
-import { sleep } from "../utils/timeout";
-import betService from '../services/bet.service'
+import { sleep } from "../../utils/timeout";
+import betService from '../../services/bet.service'
 
-export default class WTA {
-    public url = 'https://www.actionnetwork.com/wta/odds';
+export default class SOCCER {
+    public url = 'https://www.actionnetwork.com/soccer/odds';
     
     public start = async () => {
-        console.log('--- WTA START ---')
+        console.log('--- SOCCER START ---')
         const browser = await puppeteer.launch({headless: true});
         const page = await browser.newPage();
-        let i = 0;
-        while(i < 5) {
-            try {
-                await page.setDefaultNavigationTimeout(120000);
-                await page.goto(this.url, {waitUntil: 'networkidle2'});
-                await page.waitForNetworkIdle();
-                break;
-            } catch (error) {
-                i++;
-            }
-        }   
+        await page.setDefaultNavigationTimeout(120000);
+        await page.goto(this.url, {waitUntil: 'networkidle0'});
+        await page.waitForNetworkIdle();
 
         for await (const i of [1, 2, 3, 4, 5, 6, 7]) {
             console.log(' ==== ', i)
-            await page.select('div.odds-tools-sub-nav__primary-filters-container > div > div:nth-child(2)> select', 'total');
-            await sleep(3000)
-
             let betDateXpath = '//span[@class="day-nav__display"]'
             const [betDateElement] = await page.$x(betDateXpath)
             const betDate = await betDateElement.evaluate((el: HTMLElement) => el.textContent?.trim());
@@ -47,12 +36,16 @@ export default class WTA {
 
                 const homeTeam = await matchElement.evaluate((el: HTMLElement) => el.children[0].children[0].children[0].children[0].children[0].children[1].children[0].textContent?.trim());
                 const awayTeam = await matchElement.evaluate((el: HTMLElement) => el.children[0].children[0].children[0].children[1].children[0].children[1].children[0].textContent?.trim());
+                const drawTeam = 'Draw';
 
                 const homeOpenPoint = await matchElement.evaluate((el: HTMLElement) => {
                     return el.children[1].children[0].children[0].children[0] ? el.children[1].children[0].children[0].children[0].textContent?.trim(): '';
                 });
                 const awayOpenPoint = await matchElement.evaluate((el: HTMLElement) => {
                     return el.children[1].children[0].children[1] ? el.children[1].children[0].children[1].children[0].textContent?.trim(): '';
+                });
+                const drawOpenPoint = await matchElement.evaluate((el: HTMLElement) => {
+                    return el.children[1].children[0].children[2] ? el.children[1].children[0].children[2].children[0].textContent?.trim(): '';
                 });
                 if (homeOpenPoint === '' || awayOpenPoint === '') break;
 
@@ -66,6 +59,14 @@ export default class WTA {
                 });
                 const awayBestOddsPoint = await matchElement.evaluate((el: HTMLElement) => {
                     const str = el.children[2].children[0].children[1].children[0].children[0].textContent?.trim();
+                    if (str === 'N/A') {
+                        return '';
+                    } else {
+                        return str
+                    }
+                });
+                const drawBestOddsPoint = await matchElement.evaluate((el: HTMLElement) => {
+                    const str = el.children[2].children[0].children[2].children[0].children[0].textContent?.trim();
                     if (str === 'N/A') {
                         return '';
                     } else {
@@ -93,7 +94,17 @@ export default class WTA {
                         return el.children[3].children[0].children[1].children[0].children[1].textContent?.trim()
                     }
                 });
-
+                const drawPointsbetPoint = await matchElement.evaluate((el: HTMLElement) => {
+                    const fStr = el.children[3].children[0].children[2].children[0].children[0].textContent?.trim();
+                    if (fStr && fStr !== 'N/A') {
+                        return fStr
+                    } else if (fStr === 'N/A') {
+                        return ''
+                    } else {
+                        return el.children[3].children[0].children[2].children[0].children[1].textContent?.trim()
+                    }
+                });
+                
                 const homeBetMGMPoint = await matchElement.evaluate((el: HTMLElement) => {
                     const fStr = el.children[4].children[0].children[0].children[0].children[0].textContent?.trim();
                     if (fStr && fStr !== 'N/A') {
@@ -112,6 +123,16 @@ export default class WTA {
                         return ''
                     } else {
                         return el.children[4].children[0].children[1].children[0].children[1].textContent?.trim()
+                    }
+                });
+                const drawBetMGMPoint = await matchElement.evaluate((el: HTMLElement) => {
+                    const fStr = el.children[4].children[0].children[2].children[0].children[0].textContent?.trim();
+                    if (fStr && fStr !== 'N/A') {
+                        return fStr
+                    } else if (fStr === 'N/A') {
+                        return ''
+                    } else {
+                        return el.children[4].children[0].children[2].children[0].children[1].textContent?.trim()
                     }
                 });
 
@@ -135,6 +156,16 @@ export default class WTA {
                         return el.children[5].children[0].children[1].children[0].children[1].textContent?.trim()
                     }
                 });
+                const drawCaesarPoint = await matchElement.evaluate((el: HTMLElement) => {
+                    const fStr = el.children[5].children[0].children[2].children[0].children[0].textContent?.trim();
+                    if (fStr && fStr !== 'N/A') {
+                        return fStr
+                    } else if (fStr === 'N/A') {
+                        return ''
+                    } else {
+                        return el.children[5].children[0].children[2].children[0].children[1].textContent?.trim()
+                    }
+                });
 
                 const homeFanduelPoint = await matchElement.evaluate((el: HTMLElement) => {
                     const fStr = el.children[6].children[0].children[0].children[0].children[0].textContent?.trim();
@@ -154,6 +185,16 @@ export default class WTA {
                         return ''
                     } else {
                         return el.children[6].children[0].children[1].children[0].children[1].textContent?.trim()
+                    }
+                });
+                const drawFanduelPoint = await matchElement.evaluate((el: HTMLElement) => {
+                    const fStr = el.children[6].children[0].children[2].children[0].children[0].textContent?.trim();
+                    if (fStr && fStr !== 'N/A') {
+                        return fStr
+                    } else if (fStr === 'N/A') {
+                        return ''
+                    } else {
+                        return el.children[6].children[0].children[2].children[0].children[1].textContent?.trim()
                     }
                 });
 
@@ -177,7 +218,17 @@ export default class WTA {
                         return el.children[7].children[0].children[1].children[0].children[1].textContent?.trim()
                     }
                 });
-
+                const drawDraftKingsPoint = await matchElement.evaluate((el: HTMLElement) => {
+                    const fStr = el.children[7].children[0].children[2].children[0].children[0].textContent?.trim();
+                    if (fStr && fStr !== 'N/A') {
+                        return fStr
+                    } else if (fStr === 'N/A') {
+                        return ''
+                    } else {
+                        return el.children[7].children[0].children[2].children[0].children[1].textContent?.trim()
+                    }
+                });
+                
                 const homeBetRiversPoint = await matchElement.evaluate((el: HTMLElement) => {
                     const fStr = el.children[8].children[0].children[0].children[0].children[0].textContent?.trim();
                     if (fStr && fStr !== 'N/A') {
@@ -198,7 +249,17 @@ export default class WTA {
                         return el.children[8].children[0].children[1].children[0].children[1].textContent?.trim()
                     }
                 });
-
+                const drawBetRiversPoint = await matchElement.evaluate((el: HTMLElement) => {
+                    const fStr = el.children[8].children[0].children[2].children[0].children[0].textContent?.trim();
+                    if (fStr && fStr !== 'N/A') {
+                        return fStr
+                    } else if (fStr === 'N/A') {
+                        return ''
+                    } else {
+                        return el.children[8].children[0].children[2].children[0].children[1].textContent?.trim()
+                    }
+                });
+                
                 const homeUnibetPoint = await matchElement.evaluate((el: HTMLElement) => {
                     const fStr = el.children[10].children[0].children[0].children[0].children[0].textContent?.trim();
                     if (fStr && fStr !== 'N/A') {
@@ -217,6 +278,16 @@ export default class WTA {
                         return ''
                     } else {
                         return el.children[10].children[0].children[1].children[0].children[1].textContent?.trim()
+                    }
+                });
+                const drawUnibetPoint = await matchElement.evaluate((el: HTMLElement) => {
+                    const fStr = el.children[10].children[0].children[2].children[0].children[0].textContent?.trim();
+                    if (fStr && fStr !== 'N/A') {
+                        return fStr
+                    } else if (fStr === 'N/A') {
+                        return ''
+                    } else {
+                        return el.children[10].children[0].children[2].children[0].children[1].textContent?.trim()
                     }
                 });
 
@@ -240,7 +311,17 @@ export default class WTA {
                         return el.children[11].children[0].children[1].children[0].children[1].textContent?.trim()
                     }
                 });
-
+                const drawBet365Point = await matchElement.evaluate((el: HTMLElement) => {
+                    const fStr = el.children[11].children[0].children[2].children[0].children[0].textContent?.trim();
+                    if (fStr && fStr !== 'N/A') {
+                        return fStr
+                    } else if (fStr === 'N/A') {
+                        return ''
+                    } else {
+                        return el.children[11].children[0].children[2].children[0].children[1].textContent?.trim()
+                    }
+                });
+                
                 const betData = [
                     {
                         team: homeTeam,
@@ -268,12 +349,25 @@ export default class WTA {
                         unibet: awayUnibetPoint,
                         bet365: awayBet365Point,
                     },
+                    {
+                        team: drawTeam,
+                        open: drawOpenPoint,
+                        best_odd: drawBestOddsPoint,
+                        points_bet: drawPointsbetPoint,
+                        bet_mgm: drawBetMGMPoint,
+                        caesar: drawCaesarPoint,
+                        fanduel: drawFanduelPoint,
+                        draft_kings: drawDraftKingsPoint,
+                        bet_rivers: drawBetRiversPoint,
+                        unibet: drawUnibetPoint,
+                        bet365: drawBet365Point,
+                    }
                 ]
 
                 await sleep(3000);
 
                 await betService.updateBet({
-                    sportName: 'WTA',
+                    sportName: 'SOCCER',
                     matchId,
                     matchDate,
                     betDate,
@@ -289,8 +383,8 @@ export default class WTA {
             }
             await sleep(3000);
         }
-        
-        console.log('--- WTA END ---')
+
+        console.log('--- SOCCER END ---')
 
         await browser.close();
     }

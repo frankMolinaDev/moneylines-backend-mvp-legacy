@@ -1,14 +1,18 @@
-import NFL from "./nfl"
-import NCAAF from "./ncaaf";
-import NBA from "./nba";
-import NCAAB from "./ncaab";
-import NHL from "./nhl";
-import SOCCER from "./soccer";
-import WNBA from "./wnba";
-import UFC from "./ufc";
-import NASCAR from "./nascar";
-import ATP from "./atp";
-import WTA from "./wta";
+import NFL from "./odd/nfl"
+import NCAAF from "./odd/ncaaf";
+import NBA from "./odd/nba";
+import NCAAB from "./odd/ncaab";
+import NHL from "./odd/nhl";
+import SOCCER from "./odd/soccer";
+import WNBA from "./odd/wnba";
+import UFC from "./odd/ufc";
+import NASCAR from "./odd/nascar";
+import ATP from "./odd/atp";
+import WTA from "./odd/wta";
+import ProReportNFL from './pro_report/nfl';
+import ProReportNBA from './pro_report/nba'
+import ProReportNCAAB from './pro_report/ncaab'
+import ProReportNHL from './pro_report/nhl'
 import { sleep } from "../utils/timeout";
 
 const nfl= new NFL();
@@ -22,6 +26,11 @@ const ufc = new UFC();
 const nascar = new NASCAR();
 const atp = new ATP();
 const wta = new WTA();
+
+const proReportNfl = new ProReportNFL();
+const proReportNba = new ProReportNBA();
+const proReportNcaab = new ProReportNCAAB();
+const proReportNhl = new ProReportNHL();
 
 export async function startScraping() {
     while (true) {
@@ -37,6 +46,11 @@ export async function startScraping() {
         await nascar.start();
         await atp.start();
         await wta.start();
+
+        await proReportNfl.start();
+        await proReportNba.start();
+        await proReportNcaab.start();
+        await proReportNhl.start();
         console.log('------------------------------------- scraping ended -------------------------------------')
 
         await sleep(600000) // delay for 10 minutes

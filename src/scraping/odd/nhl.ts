@@ -1,12 +1,12 @@
 import puppeteer from "puppeteer";
-import { sleep } from "../utils/timeout";
-import betService from '../services/bet.service'
+import { sleep } from "../../utils/timeout";
+import betService from '../../services/bet.service'
 
-export default class WNBA {
-    public url = 'https://www.actionnetwork.com/wnba/odds';
+export default class NHL {
+    public url = 'https://www.actionnetwork.com/nhl/odds';
     
     public start = async () => {
-        console.log('--- WNBA START ---')
+        console.log('--- NHL START ---')
         const browser = await puppeteer.launch({headless: true});
         const page = await browser.newPage();
         let i = 0;
@@ -273,7 +273,7 @@ export default class WNBA {
                 await sleep(3000);
 
                 await betService.updateBet({
-                    sportName: 'WNBA',
+                    sportName: 'NHL',
                     matchId,
                     matchDate,
                     betDate,
@@ -289,8 +289,8 @@ export default class WNBA {
             }
             await sleep(3000);
         }
-        
-        console.log('--- WNBA END ---')
+
+        console.log('--- NHL END ---')
 
         await browser.close();
     }

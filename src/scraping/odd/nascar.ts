@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
-import { sleep } from "../utils/timeout";
-import betService from '../services/bet.service'
+import { sleep } from "../../utils/timeout";
+import betService from '../../services/bet.service'
 
 export default class NASCAR {
     public url = 'https://www.actionnetwork.com/nascar/odds';
