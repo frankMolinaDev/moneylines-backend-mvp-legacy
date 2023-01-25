@@ -7,11 +7,19 @@ export default class NHL {
     
     public start = async () => {
         console.log('--- NHL START ---')
-        const browser = await puppeteer.launch({headless: false});
+        const browser = await puppeteer.launch({headless: true});
         const page = await browser.newPage();
-        await page.setDefaultNavigationTimeout(60000);
-        await page.goto(this.url, {waitUntil: 'networkidle2'});
-        await page.waitForNetworkIdle();
+        let i = 0;
+        while(i < 5) {
+            try {
+                await page.setDefaultNavigationTimeout(120000);
+                await page.goto(this.url, {waitUntil: 'networkidle2'});
+                await page.waitForNetworkIdle();
+                break;
+            } catch (error) {
+                i++;
+            }
+        }   
 
         for await (const i of [1, 2, 3, 4, 5, 6, 7]) {
             console.log(' ==== ', i)
@@ -46,6 +54,7 @@ export default class NHL {
                 const awayOpenPoint = await matchElement.evaluate((el: HTMLElement) => {
                     return el.children[1].children[0].children[1] ? el.children[1].children[0].children[1].children[0].textContent?.trim(): '';
                 });
+                if (homeOpenPoint === '' || awayOpenPoint === '') break;
 
                 const homeBestOddsPoint = await matchElement.evaluate((el: HTMLElement) => {
                     const str = el.children[2].children[0].children[0].children[0].children[0].textContent?.trim();
@@ -275,6 +284,8 @@ export default class NHL {
             if (nextElement) {
                 await page.click('button[aria-label="Next Date"]');
                 await page.waitForNetworkIdle();
+            } else {
+                break;
             }
             await sleep(3000);
         }

@@ -7,13 +7,19 @@ export default class NCAAB {
     
     public start = async () => {
         console.log('--- NCAAB START ---')
-        const browser = await puppeteer.launch({headless: false});
+        const browser = await puppeteer.launch({headless: true});
         const page = await browser.newPage();
-        await page.setDefaultNavigationTimeout(60000);
-        await page.goto(this.url, {waitUntil: 'networkidle2'});
-
-        console.log(' === fetching start')
-        await page.waitForNetworkIdle();
+        let i = 0;
+        while(i < 5) {
+            try {
+                await page.setDefaultNavigationTimeout(120000);
+                await page.goto(this.url, {waitUntil: 'networkidle2'});
+                await page.waitForNetworkIdle();
+                break;
+            } catch (error) {
+                i++;
+            }
+        }   
 
         for await (const i of [1, 2, 3, 4, 5, 6, 7]) {
             console.log(' ==== ', i)
@@ -41,7 +47,6 @@ export default class NCAAB {
 
                 const homeTeam = await matchElement.evaluate((el: HTMLElement) => el.children[0].children[0].children[0].children[0].children[0].children[1].children[0].textContent?.trim());
                 const awayTeam = await matchElement.evaluate((el: HTMLElement) => el.children[0].children[0].children[0].children[1].children[0].children[1].children[0].textContent?.trim());
-                console.log('teams = ', homeTeam, ' ', awayTeam)
 
                 const homeOpenPoint = await matchElement.evaluate((el: HTMLElement) => {
                     return el.children[1].children[0].children[0].children[0] ? el.children[1].children[0].children[0].children[0].textContent?.trim(): '';
@@ -49,7 +54,7 @@ export default class NCAAB {
                 const awayOpenPoint = await matchElement.evaluate((el: HTMLElement) => {
                     return el.children[1].children[0].children[1] ? el.children[1].children[0].children[1].children[0].textContent?.trim(): '';
                 });
-                console.log('openpoint = ', homeOpenPoint, ' ', awayOpenPoint)
+                if (homeOpenPoint === '' || awayOpenPoint === '') break;
 
                 const homeBestOddsPoint = await matchElement.evaluate((el: HTMLElement) => {
                     const str = el.children[2].children[0].children[0].children[0].children[0].textContent?.trim();
@@ -67,7 +72,6 @@ export default class NCAAB {
                         return str
                     }
                 });
-                console.log('betodd = ', homeBestOddsPoint, ' ', awayBestOddsPoint)
 
                 const homePointsbetPoint = await matchElement.evaluate((el: HTMLElement) => {
                     const fStr = el.children[3].children[0].children[0].children[0].children[0].textContent?.trim();
@@ -89,7 +93,6 @@ export default class NCAAB {
                         return el.children[3].children[0].children[1].children[0].children[1].textContent?.trim()
                     }
                 });
-                console.log('pointbet = ', homePointsbetPoint, ' ', awayPointsbetPoint)
 
                 const homeBetMGMPoint = await matchElement.evaluate((el: HTMLElement) => {
                     const fStr = el.children[4].children[0].children[0].children[0].children[0].textContent?.trim();
@@ -111,7 +114,6 @@ export default class NCAAB {
                         return el.children[4].children[0].children[1].children[0].children[1].textContent?.trim()
                     }
                 });
-                console.log('betMGM = ', homeBetMGMPoint, ' ', awayBetMGMPoint)
 
                 const homeCaesarPoint = await matchElement.evaluate((el: HTMLElement) => {
                     const fStr = el.children[5].children[0].children[0].children[0].children[0].textContent?.trim();
@@ -133,7 +135,6 @@ export default class NCAAB {
                         return el.children[5].children[0].children[1].children[0].children[1].textContent?.trim()
                     }
                 });
-                console.log('caesar = ', homeCaesarPoint, ' ', awayCaesarPoint)
 
                 const homeFanduelPoint = await matchElement.evaluate((el: HTMLElement) => {
                     const fStr = el.children[6].children[0].children[0].children[0].children[0].textContent?.trim();
@@ -155,7 +156,6 @@ export default class NCAAB {
                         return el.children[6].children[0].children[1].children[0].children[1].textContent?.trim()
                     }
                 });
-                console.log('fanduel = ', homeFanduelPoint, ' ', awayFanduelPoint)
 
                 const homeDraftKingsPoint = await matchElement.evaluate((el: HTMLElement) => {
                     const fStr = el.children[7].children[0].children[0].children[0].children[0].textContent?.trim();
@@ -177,7 +177,6 @@ export default class NCAAB {
                         return el.children[7].children[0].children[1].children[0].children[1].textContent?.trim()
                     }
                 });
-                console.log('draftkings = ', homeDraftKingsPoint, ' ', awayDraftKingsPoint)
 
                 const homeBetRiversPoint = await matchElement.evaluate((el: HTMLElement) => {
                     const fStr = el.children[8].children[0].children[0].children[0].children[0].textContent?.trim();
@@ -199,7 +198,6 @@ export default class NCAAB {
                         return el.children[8].children[0].children[1].children[0].children[1].textContent?.trim()
                     }
                 });
-                console.log('betrivers = ', homeBetRiversPoint, ' ', awayBetRiversPoint)
 
                 const homeUnibetPoint = await matchElement.evaluate((el: HTMLElement) => {
                     const fStr = el.children[10].children[0].children[0].children[0].children[0].textContent?.trim();
@@ -221,7 +219,6 @@ export default class NCAAB {
                         return el.children[10].children[0].children[1].children[0].children[1].textContent?.trim()
                     }
                 });
-                console.log('unibet = ', homeUnibetPoint, ' ', awayUnibetPoint)
 
                 const homeBet365Point = await matchElement.evaluate((el: HTMLElement) => {
                     const fStr = el.children[11].children[0].children[0].children[0].children[0].textContent?.trim();
@@ -243,7 +240,6 @@ export default class NCAAB {
                         return el.children[11].children[0].children[1].children[0].children[1].textContent?.trim()
                     }
                 });
-                console.log('bet365 = ', homeBet365Point, ' ', awayBet365Point)
 
                 const betData = [
                     {
@@ -274,8 +270,6 @@ export default class NCAAB {
                     },
                 ]
 
-                console.log(betData)
-
                 await sleep(3000);
 
                 await betService.updateBet({
@@ -290,11 +284,12 @@ export default class NCAAB {
             if (nextElement) {
                 await page.click('button[aria-label="Next Date"]');
                 await page.waitForNetworkIdle();
+            } else {
+                break;
             }
             await sleep(3000);
         }
 
-        console.log(' === fetching end')
         console.log('--- NCAAB END ---')
 
         await browser.close();

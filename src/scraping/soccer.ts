@@ -7,9 +7,9 @@ export default class SOCCER {
     
     public start = async () => {
         console.log('--- SOCCER START ---')
-        const browser = await puppeteer.launch({headless: false});
+        const browser = await puppeteer.launch({headless: true});
         const page = await browser.newPage();
-        await page.setDefaultNavigationTimeout(60000);
+        await page.setDefaultNavigationTimeout(120000);
         await page.goto(this.url, {waitUntil: 'networkidle0'});
         await page.waitForNetworkIdle();
 
@@ -47,6 +47,7 @@ export default class SOCCER {
                 const drawOpenPoint = await matchElement.evaluate((el: HTMLElement) => {
                     return el.children[1].children[0].children[2] ? el.children[1].children[0].children[2].children[0].textContent?.trim(): '';
                 });
+                if (homeOpenPoint === '' || awayOpenPoint === '') break;
 
                 const homeBestOddsPoint = await matchElement.evaluate((el: HTMLElement) => {
                     const str = el.children[2].children[0].children[0].children[0].children[0].textContent?.trim();
@@ -377,6 +378,8 @@ export default class SOCCER {
             if (nextElement) {
                 await page.click('button[aria-label="Next Date"]');
                 await page.waitForNetworkIdle();
+            } else {
+                break;
             }
             await sleep(3000);
         }
