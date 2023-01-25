@@ -34,24 +34,28 @@ const proReportNhl = new ProReportNHL();
 
 export async function startScraping() {
     while (true) {
-        console.log('------------------------------------- scraping started -------------------------------------')
-        await nfl.start();
-        await ncaaf.start();
-        await nba.start();
-        await ncaab.start();
-        await nhl.start();
-        await soccer.start();
-        await wnba.start();
-        await ufc.start();
-        await nascar.start();
-        await atp.start();
-        await wta.start();
-
-        await proReportNfl.start();
-        await proReportNba.start();
-        await proReportNcaab.start();
-        await proReportNhl.start();
-        console.log('------------------------------------- scraping ended -------------------------------------')
+        try {
+            console.log('------------------------------------- scraping started -------------------------------------')
+            await nfl.start();
+            await ncaaf.start();
+            await nba.start();
+            await ncaab.start();
+            await nhl.start();
+            await soccer.start();
+            await wnba.start();
+            await ufc.start();
+            await nascar.start();
+            await atp.start();
+            await wta.start();
+    
+            await proReportNfl.start();
+            await proReportNba.start();
+            await proReportNcaab.start();
+            await proReportNhl.start();
+            console.log('------------------------------------- scraping ended -------------------------------------')
+        } catch (error) {
+            console.log('error = ', error)
+        }
 
         await sleep(600000) // delay for 10 minutes
     }
