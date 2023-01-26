@@ -3,7 +3,7 @@ import betService from '../services/bet.service';
 
 @Route('bet')
 export class BetController extends Controller {
-  @Post()
+  @Get()
   public async getBets() {
     const requests = await betService.getBets(null);
     return requests;
