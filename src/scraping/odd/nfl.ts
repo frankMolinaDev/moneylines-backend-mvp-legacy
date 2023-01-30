@@ -12,6 +12,7 @@ export default class NFL {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
     const page = await browser.newPage();
+    console.log('page', page);
     let i = 0;
     while (i < 5) {
       try {
