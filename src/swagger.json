@@ -1,0 +1,176 @@
+{
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"Bet": {
+				"properties": {
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"sportName": {
+						"type": "string"
+					},
+					"matchId": {
+						"type": "string"
+					},
+					"matchDate": {
+						"type": "string"
+					},
+					"betDate": {
+						"type": "string"
+					},
+					"betData": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"createdAt",
+					"updatedAt",
+					"id",
+					"sportName",
+					"matchId",
+					"matchDate",
+					"betDate",
+					"betData"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ProReport": {
+				"properties": {
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"id": {
+						"type": "number",
+						"format": "double"
+					},
+					"sportName": {
+						"type": "string"
+					},
+					"matchId": {
+						"type": "string"
+					},
+					"matchDate": {
+						"type": "string"
+					},
+					"betDate": {
+						"type": "string"
+					},
+					"bet": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"createdAt",
+					"updatedAt",
+					"id",
+					"sportName",
+					"matchId",
+					"matchDate",
+					"betDate",
+					"bet"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "backend",
+		"version": "1.0.0",
+		"license": {
+			"name": "MIT"
+		},
+		"contact": {}
+	},
+	"openapi": "3.0.0",
+	"paths": {
+		"/bet": {
+			"get": {
+				"operationId": "GetBets",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Bet"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "options",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/pro_report": {
+			"get": {
+				"operationId": "GetProReports",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/ProReport"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "options",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}
