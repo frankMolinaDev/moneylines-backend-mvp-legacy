@@ -1,4 +1,8 @@
-import express, { Express, Response as ExResponse, Request as ExRequest } from 'express';
+import express, {
+  Express,
+  Response as ExResponse,
+  Request as ExRequest,
+} from 'express';
 import swaggerUi from 'swagger-ui-express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -18,14 +22,9 @@ class App {
     this.scrape();
   }
 
-  private index():void {
+  private index(): void {
     this.app.use(bodyParser.json());
-    this.app.use(
-      cors({
-        origin: ['http://localhost:3000'],
-        optionsSuccessStatus: 200,
-      }),
-    );
+    this.app.use(cors());
 
     this.app.use(
       '/docs',
@@ -41,11 +40,11 @@ class App {
     RegisterRoutes(this.app);
   }
 
-  private scrape():void {
+  private scrape(): void {
     startScraping();
   }
 
-  public start():void {
+  public start(): void {
     this.app.use(errorHandler);
     this.app.listen(port, () =>
       console.log(`Application listening at http://localhost:${port}`),
